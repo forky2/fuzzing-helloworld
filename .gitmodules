@@ -4,3 +4,6 @@
 [submodule "AFLplusplus"]
 	path = extern/AFLplusplus
 	url = https://github.com/AFLplusplus/AFLplusplus.git
+[submodule "extern/dvcp"]
+	path = extern/dvcp
+	url = https://github.com/hardik05/Damn_Vulnerable_C_Program.git

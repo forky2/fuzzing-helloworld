@@ -75,3 +75,6 @@ harness
 program
 fuzzer_libpng*
 forkserver_simple
+
+output
+targets
