@@ -1,0 +1,48 @@
+start_time        : 1739453506
+start_time        : 1739453506
+last_update       : 1739453626
+run_time          : 120
+fuzzer_pid        : 74478
+cycles_done       : 1
+cycles_wo_find    : 0
+time_wo_finds     : 5
+fuzz_time         : 0
+calibration_time  : 0
+sync_time         : 0
+trim_time         : 0
+execs_done        : 660239
+execs_per_sec     : 660239
+execs_ps_last_min : 660239
+corpus_count      : 2142
+corpus_favored    : 870
+corpus_found      : 175
+corpus_imported   : 1967
+max_depth         : 9
+cur_item          : 1426
+pending_favs      : 0
+pending_total     : 815
+corpus_variable   : 0
+stability         : 100.00%
+bitmap_cvg        : 0.73%
+saved_crashes     : 0
+saved_hangs       : 0
+last_find         : 1739453620
+last_crash        : 1739453506
+last_hang         : 1739453506
+execs_since_crash : 660239
+exec_timeout      : 0
+slowest_exec_ms   : 46
+peak_rss_mb       : 0
+cpu_affinity      : 0
+edges_found       : 18
+total_edges       : 2450
+var_byte_count    : 0
+havoc_expansion   : 0
+auto_dict_entries : 0
+testcache_size    : 0
+testcache_count   : 0
+testcache_evict   : 0
+afl_banner        : 
+afl_version       : 
+target_mode       : 
+command_line      : /workspaces/fuzzing-helloworld/libafl_qemu/target/x86_64/release/qemu_launcher-development --input ./corpus --output /workspaces/fuzzing-helloworld/libafl_qemu/target/x86_64/output/ --log /workspaces/fuzzing-helloworld/libafl_qemu/target/x86_64/output/log.txt --cores 0-7 --asan-cores 0-3 --cmplog-cores 2-5 --iterations 1000000 --tui -- /workspaces/fuzzing-helloworld/libafl_qemu/target/x86_64/libpng-harness-development
