@@ -1,6 +1,6 @@
 [submodule "LibAFL"]
-	path = LibAFL
+	path = extern/LibAFL
 	url = https://github.com/AFLplusplus/LibAFL.git
 [submodule "AFLplusplus"]
-	path = AFLplusplus
+	path = extern/AFLplusplus
 	url = https://github.com/AFLplusplus/AFLplusplus.git
