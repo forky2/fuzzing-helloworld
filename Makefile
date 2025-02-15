@@ -9,20 +9,15 @@ AFL_CC = $(AFL_HOME)/afl-cc
 
 FUZZ_INPUT = $(WORKSPACE)/fuzz_input
 
-TARGET_LIB_DIR         = $(WORKSPACE)/targets/lib
 SRC_VULN_PROG_DIR      = $(WORKSPACE)/src/vuln_prog
 TARGET_PROG_ASAN       = $(WORKSPACE)/targets/vuln_prog_asan
 TARGET_PROG_HARDEN     = $(WORKSPACE)/targets/vuln_prog_harden
 
 SRC_VULN_LIB_DIR       = $(WORKSPACE)/src/vuln_lib
 SRC_VULN_LIB_HARNESS   = $(WORKSPACE)/src/vuln_lib_harness/harness.c
+TARGET_LIB_DIR         = $(WORKSPACE)/targets/lib
 TARGET_LIB_STATIC_BIN  = $(WORKSPACE)/targets/vuln_lib_static_bin
 TARGET_LIB_DYNAMIC_BIN = $(WORKSPACE)/targets/vuln_lib_dynamic_bin
-
-TARGET_03_ASAN_LIB = $(WORKSPACE)/targets/03_imgReadlib.o
-TARGET_03_ASAN_BIN = $(WORKSPACE)/targets/03_asan
-TARGET_04_ASAN_LIB = $(WORKSPACE)/targets/libimgReadlib.o
-TARGET_04_ASAN_BIN = $(WORKSPACE)/targets/04_asan
 
 # AFL++ source-code program with ASAN/CMPLOG - using file inputs
 fuzz_01_afl_asan: $(TARGET_PROG_ASAN)
