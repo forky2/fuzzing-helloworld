@@ -1,0 +1,9 @@
+AC_INIT([libimgread], [0.1])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AM_PROG_AR
+LT_INIT
+AC_CONFIG_MACRO_DIRS([m4])
+AC_PROG_CC
+AC_CONFIG_FILES([Makefile])
+AC_FUNC_MALLOC
+AC_OUTPUT

@@ -49,7 +49,9 @@ RUN apt-get update && \
         pax-utils \
         python3-msgpack \
         python3-jinja2 \
-        libcapstone-dev
+        libcapstone-dev \
+        libtool \
+        gdb
 
 # Install Rust dependencies
 USER vscode

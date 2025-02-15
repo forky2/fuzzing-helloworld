@@ -1,5 +1,10 @@
 # Fuzzing helloworld
 
+## Todo
+Forkserver
+Persistent mode
+Parallel fuzzing
+
 ## License
 
 <sup>
