@@ -73,23 +73,35 @@ fuzz_03_afl_asan: $(TARGET_PROG_ASAN)
 		-- \
 			$<
 
-# AFL++ source-code library (static) - ASAN not supported on static builds
+# AFL++ source-code library (static) w/ CMPLOG - ASAN not supported on static builds
 fuzz_04_afl_harden: $(TARGET_LIB_STATIC_BIN)
 	$(AFL_FUZZ) \
 		-i $(FUZZ_INPUT) \
 		-o output/$@ \
+		-c $<.cmplog \
 		-- \
 			$<
 $(TARGET_LIB_STATIC_BIN): $(SRC_VULN_LIB_HARNESS) $(AFL_CC)
 	cd $(SRC_VULN_LIB_DIR) && \
 	autoreconf -i && \
-	./configure --prefix=$(shell dirname $<)/libs && \
+	./configure CC=$(AFL_CC) AFL_HARDEN=1 CFLAGS="-fno-omit-frame-pointer -fsanitize=undefined" --prefix=$(shell dirname $<)/libs && \
 	make clean && \
-	make CC=$(AFL_CC) AFL_HARDEN=1 CFLAGS="-fno-omit-frame-pointer -fsanitize=undefined" && \
+	make AFL_HARDEN=1 && \
 	make install
+
 	cd $(shell dirname $<) && \
-	make CC=$(AFL_CC) AFL_HARDEN=1 CFLAGS="-fno-omit-frame-pointer -fsanitize=undefined" vuln_lib_static_harness && \
+	make CC=$(AFL_CC) AFL_HARDEN=1 CFLAGS="-fno-omit-frame-pointer -fsanitize=undefined" clean vuln_lib_static_harness && \
 	mv vuln_lib_static_harness $@
+
+	cd $(SRC_VULN_LIB_DIR) && \
+	./configure CC=$(AFL_CC) AFL_LLVM_CMPLOG=1 AFL_HARDEN=1 CFLAGS="-fno-omit-frame-pointer -fsanitize=undefined" --prefix=$(shell dirname $<)/libs && \
+	make clean && \
+	make AFL_LLVM_CMPLOG=1 AFL_HARDEN=1 && \
+	make install
+
+	cd $(shell dirname $<) && \
+	make CC=$(AFL_CC) AFL_HARDEN=1 CFLAGS="-fno-omit-frame-pointer -fsanitize=undefined" clean vuln_lib_static_harness && \
+	mv vuln_lib_static_harness $@.cmplog
 
 # AFL++ source-code library (dynamic) - ASAN mode
 fuzz_05_afl_asan: $(TARGET_LIB_DYNAMIC_BIN)
