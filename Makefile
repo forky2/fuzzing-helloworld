@@ -24,7 +24,7 @@ TARGET_03_ASAN_BIN = $(WORKSPACE)/targets/03_asan
 TARGET_04_ASAN_LIB = $(WORKSPACE)/targets/libimgReadlib.o
 TARGET_04_ASAN_BIN = $(WORKSPACE)/targets/04_asan
 
-# AFL++ source-code program with ASAN - using file inputs
+# AFL++ source-code program with ASAN/CMPLOG - using file inputs
 fuzz_01_afl_asan: $(TARGET_PROG_ASAN)
 	$(AFL_FUZZ) \
 		-i $(FUZZ_INPUT) \
@@ -35,35 +35,41 @@ fuzz_01_afl_asan: $(TARGET_PROG_ASAN)
 $(TARGET_PROG_ASAN): $(AFL_CC)
 	cd $(SRC_VULN_PROG_DIR) && \
 	autoreconf -i && \
-	./configure && \
+	./configure CC=$(AFL_CC) AFL_USE_ASAN=1 CFLAGS="-fno-omit-frame-pointer -fsanitize=undefined" && \
 	make clean && \
-	make CC=$(AFL_CC) AFL_USE_ASAN=1 CFLAGS="-fno-omit-frame-pointer" && \
+	make AFL_USE_ASAN=1 && \
 	mv imgRead $@ && \
-	AFL_LLVM_CMPLOG=1 ./configure && \
-	make AFL_LLVM_CMPLOG=1 clean && \
-	make AFL_LLVM_CMPLOG=1 CC=$(AFL_CC) AFL_USE_ASAN=1 CFLAGS="-fno-omit-frame-pointer" && \
+	./configure CC=$(AFL_CC) AFL_LLVM_CMPLOG=1 AFL_USE_ASAN=1 CFLAGS="-fno-omit-frame-pointer -fsanitize=undefined" && \
+	make clean && \
+	make AFL_LLVM_CMPLOG=1 AFL_USE_ASAN=1 && \
 	mv imgRead $@.cmplog
 
-# AFL++ source-code program with hardening - using file inputs
+# AFL++ source-code program with hardening/CMPLOG - using file inputs
 fuzz_02_afl_harden: $(TARGET_PROG_HARDEN)
 	$(AFL_FUZZ) \
 		-i $(FUZZ_INPUT) \
 		-o output/$@ -P exploit \
+		-c $<.cmplog \
 		-- \
 			$< @@
 $(TARGET_PROG_HARDEN): $(AFL_CC)
 	cd $(SRC_VULN_PROG_DIR) && \
 	autoreconf -i && \
-	./configure && \
+	./configure CC=$(AFL_CC) AFL_HARDEN=1 CFLAGS="-fno-omit-frame-pointer -fsanitize=undefined" && \
 	make clean && \
-	make CC=$(AFL_CC) AFL_HARDEN=1 CFLAGS="-fno-omit-frame-pointer" && \
-	mv imgRead $@
+	make AFL_HARDEN=1 && \
+	mv imgRead $@ && \
+	./configure CC=$(AFL_CC) AFL_LLVM_CMPLOG=1 AFL_HARDEN=1 CFLAGS="-fno-omit-frame-pointer -fsanitize=undefined" && \
+	make clean && \
+	make AFL_LLVM_CMPLOG=1 AFL_HARDEN=1 && \
+	mv imgRead $@.cmplog
 
-# AFL++ source-code program with ASAN - this time using STDIN
+# AFL++ source-code program with ASAN/CMPLOG - using STDIN
 fuzz_03_afl_asan: $(TARGET_PROG_ASAN)
 	$(AFL_FUZZ) \
 		-i $(FUZZ_INPUT) \
 		-o output/$@ \
+		-c $<.cmplog \
 		-- \
 			$<
 
