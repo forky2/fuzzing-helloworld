@@ -12,7 +12,22 @@ Modified by: https://github.com/electricworry
 #include <stdlib.h>
 #include <string.h>
 
-#include "imgread.h"
+// 3.1. Shared memory fuzzing. (Increase from 1.5k/s -> 2.5k/s)
+#include <unistd.h> // Requires libc read()
+__AFL_FUZZ_INIT();
+
+#define min(a,b) \
+   ({ __typeof__ (a) _a = (a); \
+       __typeof__ (b) _b = (b); \
+     _a < _b ? _a : _b; })
+
+struct Image
+{
+	char header[4];
+	int width;
+	int height;
+	char data[10];
+};
 
 void stack_operation(void)
 {
@@ -20,6 +35,16 @@ void stack_operation(void)
 	while(1)
 	{
 		stack_operation();
+	}
+}
+
+int slow_init(void)
+{
+	int i = 0;
+	while (i < 10000000)
+	{
+		printf("Hello\n");
+		i++;
 	}
 }
 
@@ -104,6 +129,43 @@ int process_image(struct Image *img)
 	else
 	{
 		printf("Invalid header\n");
+	}
+	
+	return 0;
+}
+
+int main(int argc,char **argv)
+{
+	FILE *fp;
+	struct Image img;
+	
+	slow_init();
+
+// 1. Deferred forkserver, skips slow initialisation. (Increase from 5/s -> 600/s)
+#ifdef __AFL_HAVE_MANUAL_CONTROL
+  	__AFL_INIT();
+#endif
+	// 3.2. Receive our buffer
+	unsigned char *buf = __AFL_FUZZ_TESTCASE_BUF;
+
+// 2. Persistent mode, iterates X test cases per fork child. (Increase from 600/s -> 1.5k/s)
+while (__AFL_LOOP(100000)) {
+
+		// 3.3. Replace fp read with memcpy.
+		// if (argc < 2)
+		// {
+		// 	// Read from STDIN
+		// 	fp = stdin;
+		// }
+		// else
+		// {
+		// 	fp = fopen(argv[1], "r");
+		// }
+		int len = __AFL_FUZZ_TESTCASE_LEN;
+		memcpy(&img, buf, min(len, sizeof(img)));
+		// fread(&img, 1, sizeof(img), fp);
+		// fclose(fp);
+		process_image(&img);
 	}
 
 	return 0;

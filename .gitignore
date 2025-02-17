@@ -80,3 +80,4 @@ forkserver_simple
 output
 targets
 core
+tmp

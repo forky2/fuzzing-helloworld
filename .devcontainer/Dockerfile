@@ -51,9 +51,15 @@ RUN apt-get update && \
         python3-jinja2 \
         libcapstone-dev \
         libtool \
-        gdb
+        gdb \
+        tmux \
+        binutils-dev \
+        libunwind-dev \
+        libblocksruntime-dev
 
 # Install Rust dependencies
 USER vscode
 RUN . "$HOME/.cargo/env" && cargo install cargo-make
+RUN . "$HOME/.cargo/env" && cargo install afl_runner
+RUN . "$HOME/.cargo/env" && cargo install just
 USER root

@@ -8,9 +8,14 @@ Modified by: https://github.com/electricworry
 
 // A vulnerable c program to explain common vulnerability types
 
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define min(a,b) \
+   ({ __typeof__ (a) _a = (a); \
+       __typeof__ (b) _b = (b); \
+     _a < _b ? _a : _b; })
 
 struct Image
 {
@@ -20,7 +25,7 @@ struct Image
 	char data[10];
 };
 
-void stack_operation()
+void stack_operation(void)
 {
 	char buff[0x1000];
 	while(1)
@@ -38,7 +43,7 @@ int process_image(FILE *fp)
 		printf("\nCan't open file or file doesn't exist.\n");
 		exit(0);
 	}
-	printf("\nSize. %d\n", sizeof(struct Image));
+
 	while(fread(&img, 1, sizeof(img), fp) > 0)
 	{
 		if(strcmp(img.header,"IMG") == 0)

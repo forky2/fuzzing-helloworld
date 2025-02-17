@@ -7,3 +7,6 @@
 [submodule "extern/dvcp"]
 	path = extern/dvcp
 	url = https://github.com/hardik05/Damn_Vulnerable_C_Program.git
+[submodule "extern/honggfuzz"]
+	path = extern/honggfuzz
+	url = https://github.com/google/honggfuzz.git

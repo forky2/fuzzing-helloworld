@@ -1,9 +1,11 @@
 # Fuzzing helloworld
 
-## Todo
-Forkserver
-Persistent mode
-Parallel fuzzing
+## TODO
+* Parallel fuzzing: https://crates.io/crates/afl_runner
+* LibAFL - Make an afl-cc like compiler wrapper and a forkserver based fuzzer?
+* Honggfuzz
+* Binary only
+* Start reading through AFL++ and LibAFL repos
 
 ## License
 
