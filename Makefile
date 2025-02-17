@@ -197,6 +197,7 @@ $(TARGET_LIB_STATIC_BIN): $(SRC_VULN_LIB_HARNESS) $(AFL_CC)
 # LibFuzzer source-code library (dynamic) w/ ASAN
 # For cmdline options see: https://llvm.org/docs/LibFuzzer.html
 fuzz_07_libfuzzer: $(TARGET_LIB_STATIC_LF_BIN)
+	cd tmp && \
 	LD_LIBRARY_PATH=$(TARGET_LIB_DIR) $(TARGET_LIB_STATIC_LF_BIN) $(CORPUS)
 $(TARGET_LIB_STATIC_LF_BIN): $(SRC_VULN_LIB_HARNESS_LF) $(CLANG) $(TARGET_LIB_DIR)
 	cd $(SRC_VULN_LIB_DIR) && \
