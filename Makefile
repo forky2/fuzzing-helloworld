@@ -11,7 +11,8 @@ LIBAFL_FUZZ = $(WORKSPACE)/extern/LibAFL/fuzzers/forkserver/libafl-fuzz/target/r
 AFL_CC      = $(AFL_HOME)/afl-cc
 CLANG       = /usr/bin/clang
 
-CORPUS = $(WORKSPACE)/fuzz_input
+CORPUS = $(WORKSPACE)/corpus
+OUTPUT = $(WORKSPACE)/output
 
 SRC_VULN_PROG_DIR         = $(WORKSPACE)/src/vuln_prog
 TARGET_PROG_ASAN          = $(WORKSPACE)/targets/vuln_prog_asan
@@ -35,11 +36,11 @@ TARGET_LIB_DYNAMIC_BIN    = $(WORKSPACE)/targets/vuln_lib_dynamic_bin
 ##
 
 # AFL++ source-code program w/ ASAN + CMPLOG - using file inputs
-fuzz_01_afl_asan_file: $(TARGET_PROG_ASAN)
+fuzz_01_afl_asan_file: $(TARGET_PROG_ASAN) $(AFL_FUZZ)
 	AFL_PIZZA_MODE=1 \
 	$(AFL_FUZZ) \
 		-i $(CORPUS) \
-		-o output/$@ \
+		-o $(OUTPUT)/$@ \
 		-c $<.cmplog \
 		-- \
 			$< @@
@@ -56,11 +57,12 @@ $(TARGET_PROG_ASAN): $(AFL_CC)
 	mv imgRead $@.cmplog
 
 # libafl-fuzz source-code program w/ ASAN + CMPLOG (incomplete port of afl++ to Rust/LibAFL)
-fuzz01_libaflfuzz_asan_file: $(TARGET_PROG_ASAN)
-	AFL_CORES=0-28 \
+fuzz_01_libaflfuzz_asan_file: $(TARGET_PROG_ASAN) $(LIBAFL_FUZZ)
+	cd tmp && \
+	AFL_CORES=0-15 \
 	$(LIBAFL_FUZZ) \
 		-i $(CORPUS) \
-		-o output/$@ \
+		-o $(OUTPUT)/$@ \
 		-c $<.cmplog \
 			$<
 
