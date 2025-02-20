@@ -173,7 +173,7 @@ impl<M: Monitor> Instance<'_, M> {
             .qemu_parameters(args)
             .modules(modules)
             .build()?;
-        let harness = Harness::init(emulator.qemu()).expect("Error setting up harness.");
+        let harness = Harness::init(emulator.qemu(), self.options.entrypoint, self.options.exitpoint).expect("Error setting up harness.");
         let qemu = emulator.qemu();
 
         // update address filter after qemu has been initialized

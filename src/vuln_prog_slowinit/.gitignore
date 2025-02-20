@@ -1,0 +1,15 @@
+.deps
+autom4te.cache
+aclocal.m4
+compile
+config*
+!configure.ac
+decomp
+configure
+*.obj
+imgRead
+depcomp
+install-sh
+Makefile
+Makefile.in
+missing

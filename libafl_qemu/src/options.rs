@@ -74,6 +74,12 @@ pub struct FuzzerOptions {
     #[arg(long = "exclude", help="Exclude address ranges", value_parser = FuzzerOptions::parse_ranges, conflicts_with="include")]
     pub exclude: Option<Vec<Range<GuestAddr>>>,
 
+    #[arg(long = "entrypoint", help="Start address", value_parser = FuzzerOptions::parse_address)]
+    pub entrypoint: GuestAddr,
+
+    #[arg(long = "exitpoint", help="Exit address", value_parser = FuzzerOptions::parse_address)]
+    pub exitpoint: GuestAddr,
+
     #[arg(
         short = 'd',
         help = "Write a DrCov Trace for the current input. Requires -r."
@@ -93,6 +99,13 @@ pub struct FuzzerOptions {
 impl FuzzerOptions {
     fn parse_timeout(src: &str) -> Result<Duration, Error> {
         Ok(Duration::from_millis(src.parse()?))
+    }
+
+    fn parse_address(src: &str) -> Result<GuestAddr, Error> {
+        let addr = GuestAddr::from_str_radix(src.trim_start_matches("0x"), 16).map_err(|e| {
+            Error::illegal_argument(format!("Invalid address: {} ({e:})", src))
+        })?;
+        Ok(addr)
     }
 
     fn parse_ranges(src: &str) -> Result<Range<GuestAddr>, Error> {

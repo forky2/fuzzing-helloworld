@@ -1,11 +1,12 @@
 # Fuzzing helloworld
 
 ## TODO
+* LibAFL - qemu_launcher
 * Parallel fuzzing: https://crates.io/crates/afl_runner
 * LibAFL - Make an afl-cc like compiler wrapper and a forkserver based fuzzer?
-* Honggfuzz
-* Binary only
 * Start reading through AFL++ and LibAFL repos
+* Make target harder to crash. Each class of vuln should be hard to get to to compare efficacy and throughput of each option. Also make one dependent on a checksum (for CMPLOG)
+* 
 
 ## License
 
