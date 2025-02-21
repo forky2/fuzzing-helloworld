@@ -2,6 +2,9 @@
 
 ## TODO
 * LibAFL - qemu_launcher
+  * Nearly done
+  * coredumps everywhere!
+  * SIGSEGV causes the fuzzer to crash. See bookmark!
 * Parallel fuzzing: https://crates.io/crates/afl_runner
 * LibAFL - Make an afl-cc like compiler wrapper and a forkserver based fuzzer?
 * Start reading through AFL++ and LibAFL repos

@@ -5,7 +5,7 @@ use libafl::{
 };
 use libafl_bolts::AsSlice;
 use libafl_qemu::{
-    elf::EasyElf, ArchExtras, CallingConvention, GuestAddr, GuestReg, MmapPerms, Qemu, Regs,
+    elf::EasyElf, ArchExtras, CallingConvention, GuestAddr, GuestReg, MmapPerms, Qemu, Regs, QemuMappingsViewer,
 };
 
 pub struct Harness {
@@ -14,8 +14,6 @@ pub struct Harness {
     pc: GuestAddr,
     stack_ptr: GuestAddr,
     ret_addr: GuestAddr,
-    arg_0: GuestAddr, // The Cdecl arg 0 for target func
-    arg_1: GuestAddr, // The Cdecl arg 1 for target func
 }
 
 pub const MAX_INPUT_SIZE: usize = 1_048_576; // 1MB
@@ -34,6 +32,10 @@ impl Harness {
     /// Initialize the emulator, run to the entrypoint (or jump there) and return the [`Harness`] struct
     pub fn init(qemu: Qemu, start_pc: GuestAddr, exit_pc: GuestAddr) -> Result<Harness, Error> {
         log::info!("start_pc @ {start_pc:#x}");
+
+        // Print out mappings - Useful for checking where the target is mapped.
+        let mappings = QemuMappingsViewer::new(&qemu);
+        log::info!("\n{:#?}", mappings);
 
         qemu.entry_break(start_pc);
 
@@ -56,22 +58,12 @@ impl Harness {
             .read_return_address()
             .map_err(|e| Error::unknown(format!("Failed to read return address: {e:?}")))?;
 
-        let arg_0: GuestAddr = qemu
-            .read_function_argument(CallingConvention::Cdecl, 0)
-            .map_err(|e| Error::unknown(format!("Failed to read argument 0: {e:?}")))?;
-
-        let arg_1: GuestAddr = qemu
-            .read_function_argument(CallingConvention::Cdecl, 0)
-            .map_err(|e| Error::unknown(format!("Failed to read argument 0: {e:?}")))?;
-
         Ok(Harness {
             qemu,
             input_addr,
             pc,
             stack_ptr,
             ret_addr,
-            arg_0,
-            arg_1,
         })
     }
 
@@ -110,22 +102,10 @@ impl Harness {
             .write_reg(Regs::Sp, self.stack_ptr)
             .map_err(|e| Error::unknown(format!("Failed to write SP: {e:?}")))?;
 
-        // TODO
         self.qemu
-            .write_function_argument(CallingConvention::Cdecl, 0, self.arg_0)
+            .write_function_argument(CallingConvention::Cdecl, 0, self.input_addr)
             .map_err(|e| Error::unknown(format!("Failed to write argument 0: {e:?}")))?;
 
-        // self.qemu
-        //     .write_return_address(self.ret_addr)
-        //     .map_err(|e| Error::unknown(format!("Failed to write return address: {e:?}")))?;
-
-        // self.qemu
-        //     .write_function_argument(CallingConvention::Cdecl, 0, self.input_addr)
-        //     .map_err(|e| Error::unknown(format!("Failed to write argument 0: {e:?}")))?;
-
-        // self.qemu
-        //     .write_function_argument(CallingConvention::Cdecl, 1, len)
-        //     .map_err(|e| Error::unknown(format!("Failed to write argument 1: {e:?}")))?;
         unsafe {
             let _ = self.qemu.run();
         };

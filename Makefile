@@ -6,7 +6,7 @@ HONGGFUZZ   = $(WORKSPACE)/extern/honggfuzz/honggfuzz
 HFUZZ_CC    = $(WORKSPACE)/extern/honggfuzz/hfuzz_cc/hfuzz-pcguard-clang
 LIBAFL_FUZZ = $(WORKSPACE)/extern/LibAFL/fuzzers/forkserver/libafl-fuzz/target/release/libafl-fuzz
 AFL_CC      = $(AFL_HOME)/afl-cc
-LAFL_QL     = $(WORKSPACE)/libafl_qemu/target/x86_64/release/qemu_launcher-x86_64
+LAFL_QL     = $(WORKSPACE)/libafl_qemu/target/release/qemu_launcher
 CLANG       = /usr/bin/clang
 
 CORPUS = $(WORKSPACE)/corpus
@@ -354,24 +354,25 @@ $(TARGET_PROG_PERSIST_HOOK): $(SRC_VULN_PROG_HOOK_DIR)
 	cp read_into_rdi.so $@
 
 # GCC compiled program - LibAFL's qemu_launcher example
+# 5.256M exec/s
 .PHONY: fuzz_11_libafl_qemu_launcher
 fuzz_11_libafl_qemu_launcher: $(TARGET_PROG_SLOWINIT) $(LAFL_QL)
+	RUST_LOG=info \
 	$(LAFL_QL) \
 	--input $(CORPUS) \
 	--output $(OUTPUT)/$@ \
 	--log tmp/qemu_launcher.log \
-	--cores 0-7 \
-	--cmplog-cores 0-1 \
-	--asan-cores 2-3 \
+	--cores 0 \
+	-v \
 	--include 0x0-0xffffffffffffffff \
-	--entrypoint $(shell printf "%#x\n" $$(( 0x4000000000 + 0x11df ))) \
-	--exitpoint $(shell printf "%#x\n" $$(( 0x4000000000 + 0x11e4 ))) \
+	--entrypoint $(shell printf "%#x\n" $$(( 0x0000555555556000 + 0x11dc ))) \
+	--exitpoint $(shell printf "%#x\n" $$(( 0x0000555555556000 + 0x11e1 ))) \
 	-- \
 		$< tmp/dummy
 
 .PHONY: clean
 clean:
-	rm -rf targets/* output/* core crash-* .cur_input_*
+	rm -rf tmp/* tmp/.cur_input_* targets/* output/* core *.core crash-* .cur_input_*
 
 $(TARGET_LIB_DIR):
 	mkdir -p $@
@@ -390,7 +391,7 @@ $(HFUZZ_CC) $(HONGGFUZZ):
 
 $(LAFL_QL):
 	cd libafl_qemu && \
-	cargo make -p x86_64 fuzzer
+	PROFILE=release ARCH=x86_64 just build
 
 .PHONY: libafl-qemu-run
 libafl-qemu-run:

@@ -39,7 +39,7 @@ int slow_init(void)
 	int i = 0;
 	while (i < 1000000)
 	{
-		printf("Hello\n");
+		// printf("Hello\n");
 		i++;
 	}
 }
@@ -132,7 +132,6 @@ int process_image(struct Image *img)
 
 int main(int argc,char **argv)
 {
-	printf("HELLO\n");
 	FILE *fp;
 	struct Image img;
 	

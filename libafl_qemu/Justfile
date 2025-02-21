@@ -1,0 +1,15 @@
+import "../extern/LibAFL/just/libafl.just"
+
+FUZZER_NAME := "qemu_launcher"
+ARCH := "x86_64"
+
+[unix]
+build:
+    cargo build \
+      --profile {{ PROFILE }} \
+      --features {{ ARCH }} \
+      --target-dir {{ TARGET_DIR }}
+
+[unix]
+clean:
+    cargo clean
