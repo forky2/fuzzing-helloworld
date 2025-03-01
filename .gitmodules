@@ -10,3 +10,6 @@
 [submodule "extern/honggfuzz"]
 	path = extern/honggfuzz
 	url = https://github.com/google/honggfuzz.git
+[submodule "qemu-libafl-bridge"]
+	path = qemu-libafl-bridge
+	url = https://github.com/AFLplusplus/qemu-libafl-bridge.git
