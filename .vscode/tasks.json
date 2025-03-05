@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"type": "shell",
-			"command": "cd ${workspaceRoot}/extern/LibAFL/fuzzers/binary_only/qemu_tmin && PROFILE=dev just build",
+			"command": "cd ${workspaceRoot}/extern/LibAFL/fuzzers/binary_only/qemu_tmin && if [ ! -f target/libpng-harness-dev ]; then PROFILE=dev just harness; fi && PROFILE=dev just build",
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -12,7 +12,7 @@
 		},
 		{
 			"type": "shell",
-			"command": "cd ${workspaceRoot}/extern/LibAFL/fuzzers/binary_only/qemu_cmin && PROFILE=dev just build",
+			"command": "cd ${workspaceRoot}/extern/LibAFL/fuzzers/binary_only/qemu_cmin && if [ ! -f target/libpng-harness-dev ]; then PROFILE=dev just harness; fi && PROFILE=dev just build",
 			"group": {
 				"kind": "build",
 				"isDefault": true
