@@ -1,0 +1,89 @@
+{
+	"files": [
+		{
+			"path": "extern/LibAFL/libafl/src/executors/inprocess_fork/stateful.rs",
+			"bookmarks": [
+				{
+					"line": 115,
+					"column": 22,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "extern/LibAFL/fuzzers/binary_only/qemu_cmin/src/fuzzer.rs",
+			"bookmarks": [
+				{
+					"line": 311,
+					"column": 26,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "extern/LibAFL/libafl/src/state/mod.rs",
+			"bookmarks": [
+				{
+					"line": 724,
+					"column": 20,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "extern/LibAFL/libafl/src/fuzzer/mod.rs",
+			"bookmarks": [
+				{
+					"line": 320,
+					"column": 7,
+					"label": ""
+				},
+				{
+					"line": 491,
+					"column": 7,
+					"label": ""
+				},
+				{
+					"line": 530,
+					"column": 31,
+					"label": ""
+				},
+				{
+					"line": 618,
+					"column": 19,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "extern/LibAFL/libafl/src/feedbacks/map.rs",
+			"bookmarks": [
+				{
+					"line": 167,
+					"column": 15,
+					"label": ""
+				},
+				{
+					"line": 352,
+					"column": 23,
+					"label": ""
+				},
+				{
+					"line": 726,
+					"column": 26,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "extern/LibAFL/fuzzers/binary_only/qemu_tmin/src/fuzzer.rs",
+			"bookmarks": [
+				{
+					"line": 252,
+					"column": 32,
+					"label": ""
+				}
+			]
+		}
+	]
+}

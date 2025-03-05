@@ -1,0 +1,23 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"command": "cd ${workspaceRoot}/extern/LibAFL/fuzzers/binary_only/qemu_tmin && PROFILE=dev just build",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "build-qemu_tmin"
+		},
+		{
+			"type": "shell",
+			"command": "cd ${workspaceRoot}/extern/LibAFL/fuzzers/binary_only/qemu_cmin && PROFILE=dev just build",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "build-qemu_cmin"
+		}
+	]
+}
