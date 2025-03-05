@@ -6,7 +6,6 @@ vendor
 
 .DS_Store
 .env
-.vscode
 
 *.test
 *.tmp
