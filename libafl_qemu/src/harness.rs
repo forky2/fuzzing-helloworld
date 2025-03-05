@@ -103,7 +103,7 @@ impl Harness {
             .map_err(|e| Error::unknown(format!("Failed to write SP: {e:?}")))?;
 
         self.qemu
-            .write_function_argument(CallingConvention::Cdecl, 0, self.input_addr)
+            .write_function_argument(0, self.input_addr)
             .map_err(|e| Error::unknown(format!("Failed to write argument 0: {e:?}")))?;
 
         unsafe {
