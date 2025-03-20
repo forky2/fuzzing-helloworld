@@ -27,7 +27,8 @@
 		"vscode": {
 			"extensions": [
 				"ms-vscode.hexeditor",
-				"rust-lang.rust-analyzer"
+				"rust-lang.rust-analyzer",
+				"ms-vscode.cpptools"
 			]
 		}
 	},

@@ -358,6 +358,7 @@ $(TARGET_PROG_PERSIST_HOOK): $(SRC_VULN_PROG_HOOK_DIR)
 .PHONY: fuzz_11_libafl_qemu_launcher
 fuzz_11_libafl_qemu_launcher: $(TARGET_PROG_SLOWINIT) $(LAFL_QL)
 	dd if=/dev/zero of=tmp/dummy bs=1k count=4
+	ulimit -c 0
 	RUST_LOG=info \
 	$(LAFL_QL) \
 	--input $(CORPUS) \
