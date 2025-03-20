@@ -24,9 +24,6 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --defau
 RUN . "$HOME/.cargo/env" && rustup toolchain install nightly --allow-downgrade --profile minimal --component clippy
 USER root
 
-# Unminimise
-RUN yes | unminimize
-
 # Dependencies
 RUN apt-get update && \
     apt-get install -y \
