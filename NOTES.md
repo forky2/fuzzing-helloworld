@@ -134,3 +134,57 @@ The InMemoryOnDiskCorpus is what stores a corpus on disk (and in memory). It imp
 The StdState has load_file() which runs an input (it's got the fuzzer and executor, so can call fuzzer.evaluate_input), and the result determines whether it gets added as fuzzer.add_disabled_input(). It returns result Corpus or None depending.
 
 In qemu_cmin, the MaxMapFeedback with HitcountsMapObserver is what decides whether an input is interesting or not.
+
+## Components
+
+Harness - The function or closure we want to test. The harness (target) really
+  needs to update something, whether that's coverage data or some other piece of data.
+
+Observer - An observation channel, e.g. StdMapObserver which will observe a map of something
+  e.g. a map of the signals.
+  Still a black box to me.
+
+Feedback - Struct to rate the interestingness of an input.
+  e.g. MaxMapFeedback::new(&observer) takes our observation channel and considers
+  'interesting' when ...???
+
+Objective - Struct to decide if an input is a solution (crash?) or not.
+  e.g. CrashFeedback::new() = ExitKindFeedback<CrashLogic> which checks the
+  exit kind of an execution, and if it was a Crash then yes. (Who sets Crash?)
+
+State - e.g. StdState (???) takes:
+  - rand
+  - corpus - Initial input corpus
+  - solutions - Corpus of solutions (mutations that pleased Objective)
+  - feedback (above)
+  - objective (above)
+
+
+
+Fuzzer (Evaluator trait) - e.g. StdFuzzer::new() takes:
+  - scheduler (above)
+  - feedback (above)
+  - objective (above)
+  evaluate_input() for StdFuzzer:
+    - exit_kind = execute_input()
+        - executor.observers_mut().pre_exec_all()
+        - start_timer!
+        - exit_kind = executor.run_target()
+            - Enter target (divider between fuzzer and harness)
+
+Executor - e.g. InProcessExecutor::new() takes:
+  - harness (see above)
+  - observers (tuple_list!() of all observers, above)
+  - fuzzer (above)
+  - state (above)
+  - manager (above)
+
+Generator - e.g. RandPrintablesGenerator::new() can gerate random printable bytearrays.
+
+StdState.generate_initial_inputs() - Can be used to generate initial inputs. It takes:
+  - fuzzer (above)
+  - executor (above)
+  - generator (above)
+  - Manager (above)
+  - Number of cases to generate
+  It just calls generator.generate() a number of times and runs fuzzer.evaluate_input() with them.

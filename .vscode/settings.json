@@ -1,7 +1,7 @@
 {
     "rust-analyzer.linkedProjects": [
-        "extern/LibAFL/fuzzers/binary_only/qemu_tmin/Cargo.toml",
         "extern/LibAFL/fuzzers/binary_only/qemu_cmin/Cargo.toml",
         "extern/LibAFL/fuzzers/binary_only/qemu_coverage/Cargo.toml",
+        "extern/LibAFL/fuzzers/baby/baby_fuzzer/Cargo.toml",
     ]
 }
