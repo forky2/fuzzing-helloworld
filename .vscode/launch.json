@@ -21,7 +21,8 @@
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}/extern/LibAFL/fuzzers/binary_only/qemu_tmin",
             "environment": [
-                { "name": "RUST_LOG", "value": "debug" }
+                { "name": "RUST_LOG", "value": "debug" },
+                { "name": "RUST_BACKTRACE", "value": "1" },
             ],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -64,7 +65,8 @@
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}/extern/LibAFL/fuzzers/binary_only/qemu_cmin",
             "environment": [
-                { "name": "RUST_LOG", "value": "debug" }
+                { "name": "RUST_LOG", "value": "debug" },
+                { "name": "RUST_BACKTRACE", "value": "1" },
             ],
             "externalConsole": false,
             "MIMode": "gdb",
