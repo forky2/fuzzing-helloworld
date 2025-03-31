@@ -11,16 +11,6 @@
 			]
 		},
 		{
-			"path": "extern/LibAFL/fuzzers/binary_only/qemu_cmin/src/fuzzer.rs",
-			"bookmarks": [
-				{
-					"line": 311,
-					"column": 26,
-					"label": ""
-				}
-			]
-		},
-		{
 			"path": "extern/LibAFL/libafl/src/state/mod.rs",
 			"bookmarks": [
 				{
@@ -59,28 +49,18 @@
 			"path": "extern/LibAFL/libafl/src/feedbacks/map.rs",
 			"bookmarks": [
 				{
-					"line": 167,
+					"line": 170,
 					"column": 15,
 					"label": ""
 				},
 				{
-					"line": 352,
+					"line": 355,
 					"column": 23,
 					"label": ""
 				},
 				{
-					"line": 726,
+					"line": 729,
 					"column": 26,
-					"label": ""
-				}
-			]
-		},
-		{
-			"path": "extern/LibAFL/fuzzers/binary_only/qemu_tmin/src/fuzzer.rs",
-			"bookmarks": [
-				{
-					"line": 252,
-					"column": 32,
 					"label": ""
 				}
 			]

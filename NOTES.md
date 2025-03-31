@@ -135,31 +135,76 @@ The StdState has load_file() which runs an input (it's got the fuzzer and execut
 
 In qemu_cmin, the MaxMapFeedback with HitcountsMapObserver is what decides whether an input is interesting or not.
 
-## Components
+## Components - based on Baby Fuzzer
 
-Harness - The function or closure we want to test. The harness (target) really
-  needs to update something, whether that's coverage data or some other piece of data.
+Harness - The function or closure we want to test.
+  Since we prefer a generative fuzzer that gets feedbacks over one that doesn't,
+  our harness really needs to update something, whether that's coverage data or
+  some other piece of data.
+  And it needs to do something to indicate a solution state (e.g. crash).
+  In the baby_fuzzer example, an array of u8 is used in a contrived way to
+  represent coverage; a "signals map".
 
-Observer - An observation channel, e.g. StdMapObserver which will observe a map of something
-  e.g. a map of the signals.
-  Still a black box to me.
+Observer - An observation channel, e.g. StdMapObserver which will observe a map
+  of something (like the the above signals map).
+  Must implement: CanTrack + AsRef<O> + Named
+  The observer seems to maintain a state of the result of one execution only.
 
 Feedback - Struct to rate the interestingness of an input.
-  e.g. MaxMapFeedback::new(&observer) takes our observation channel and considers
-  'interesting' when ...???
+  e.g. MaxMapFeedback::new(&observer) takes our observer and considers
+  an input interesting when the "observation" is simply different from all
+  previous observations. e.g. previous runs yielded all 0s, but this latest run
+  yielded a 1 in the map.
+  The Max in the name means that in a competition between last and current, the
+  larger number wins, so that means the novel `0..1..0` wins over `0..0`.
+  Clearly a MinMapFeedback would not be of use in our scenario. (The fuzzer
+  would never gain new interesting inputs and will only find the crash by
+  brute force random luck).
+  Needs to be StateInitializer + Feedback.
+  Needs to have a Reducer? e.g. a MaxReducer or a MinReducer.
 
 Objective - Struct to decide if an input is a solution (crash?) or not.
   e.g. CrashFeedback::new() = ExitKindFeedback<CrashLogic> which checks the
   exit kind of an execution, and if it was a Crash then yes. (Who sets Crash?)
 
 State - e.g. StdState (???) takes:
-  - rand
+  - rand - Source of (hopefully) high entropy
   - corpus - Initial input corpus
   - solutions - Corpus of solutions (mutations that pleased Objective)
-  - feedback (above)
-  - objective (above)
+  - feedback - (above)
+  - objective - (above)
 
+Monitor - struct that decides how stats/events/information are displayed to user
+  Could be a complicated ncurses style frontend, or it could be a simple logger.
+  In baby_fuzzer, `let mon = SimpleMonitor::new(|s| println!("{s}"));` creates
+  a simple monitor that just prints out whatever it's fed.
 
+EventManager - e.g. SimpleEventManager::new(mon).
+  I'm still not sure of the point of this component. From the docs:
+  Another required component is the EventManager. It handles some events such as
+  the addition of a testcase to the corpus during the fuzzing process. For our
+  purpose, we use the simplest one that just displays the information about
+  these events to the user using a Monitor instance.
+  At the most minimal, I think it needs to implement a ProgressReporter.
+  For a NopFuzzer, it needs to be ProgressReporter.
+  For a StdFuzzer, it needs to be ProgressReporter + EventFirer + SendExiting + EventReceiver
+  And the executor (GenericInProcessExecutor) requires it to be a EventFirer + EventRestarter too.
+  I know it creates its own ClientStatsManager on instantiation.
+  Anyway, how is it used?
+  Well, when StdState.generate_initial_inputs() is called it will...
+  - fuzzer.evaluate_input()
+    - I think mgr is just passed in here so its pointer can be saved before harness executes.
+      This is something that the InProcess executor does.
+  - call manager.fire([Some Event]), which (jesus) tells self.client_stats_manager about that thing. If it's an unhandled event it will push it onto its local vector of events.
+
+Scheduler - e.g. QueueScheduler::new(). Apparently the scheduler defines how the
+  fuzzer requests a testcase from the corpus. QueueScheduler would seem to be a
+  trivial queue of items. But anyway, the Scheduler trait defines:
+    - on_add() called when a testcase is added to the corpus
+    - on_evaluation() when an input has been evaluated
+    - next() get the next entry
+    - set_current_scheduled() sets the current fuzzed corpusid.
+  It gets things from state (which it is passed in all these calls) I think.
 
 Fuzzer (Evaluator trait) - e.g. StdFuzzer::new() takes:
   - scheduler (above)
@@ -188,3 +233,61 @@ StdState.generate_initial_inputs() - Can be used to generate initial inputs. It 
   - Manager (above)
   - Number of cases to generate
   It just calls generator.generate() a number of times and runs fuzzer.evaluate_input() with them.
+  It will only keep an initial random generation as an input if it is *interesting*!
+  If you just want the first x random inputs regardless of interestingness, use
+  generate_initial_inputs_forced().
+
+Mutators - Before fuzzing, we need mutators. (Well we could run without any but
+  it would be pretty pointless.) We use the StdScheduledMutator::new() which
+  takes a tuple of structs that implement the Mutator trait (they have a
+  mutate() function). These mutators are passed to the fuzzer as a stage in the
+  execution loop.
+  The mutator(s) receive a pointer to the input data and they get to do their
+  thing on it.
+  There is a NopMutator which does nothing, and is there for testing. Nice.
+
+Finally we can call fuzzer.fuzz_loop().
+
+## qemu_cmin
+
+Ensure you understand this first.
+
+SimpleRestartingEventManager:
+```
+///The [`SimpleRestartingEventManager`] is a combination of a
+/// `restarter` and `runner`, that can be used on systems both with and without `fork` support. The
+/// `restarter` will start a new process each time the child crashes or times out.
+```
+
+Shared memory is used for the edges map, but it's only really required for the
+fork mode. If snapshot mode is used then it's not adding anything as everything
+is in one-process anyway.
+
+(In snapshot mode, shared memory will be used for llmp to connect different
+fuzzer nodes, but that's another matter.)
+
+cmin works by running all of a corpus through as `state.load_initial_inputs()`
+so that only uniquely interesting (i.e. edge map is the hash key) inputs
+are kept. It makes no attempt to reduce those test cases.
+
+## baby_fuzzer_minimizing
+
+The key to minimising a test case is here:
+
+```
+let minimizer = StdScheduledMutator::new(havoc_mutations());
+let mut stages = tuple_list!(StdTMinMutationalStage::new(
+    minimizer,
+    CrashFeedback::new(),
+    1 << 10,
+));
+```
+
+This stage 'minimizer' is running all of the havoc_mutations repeatedly (1<<10
+times).
+
+
+
+## qemu_tmin
+
+Need to understand reducers before undertaking.
