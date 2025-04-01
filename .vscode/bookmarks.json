@@ -49,17 +49,17 @@
 			"path": "extern/LibAFL/libafl/src/feedbacks/map.rs",
 			"bookmarks": [
 				{
-					"line": 170,
+					"line": 167,
 					"column": 15,
 					"label": ""
 				},
 				{
-					"line": 355,
+					"line": 352,
 					"column": 23,
 					"label": ""
 				},
 				{
-					"line": 729,
+					"line": 726,
 					"column": 26,
 					"label": ""
 				}
