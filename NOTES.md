@@ -291,3 +291,10 @@ times).
 ## qemu_tmin
 
 Need to understand reducers before undertaking.
+
+
+load_input_into: extern/LibAFL/libafl/src/corpus/inmemory_ondisk.rs#L195
+Called whenever a test case is mutated.
+
+is_interesting_u8_simd_optimized: extern/LibAFL/libafl/src/feedbacks/map.rs#L610
+For calculating if a coverage map change is interesting.
